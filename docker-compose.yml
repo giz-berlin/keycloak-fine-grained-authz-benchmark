@@ -1,0 +1,12 @@
+services:
+  keycloak:
+    image: "quay.io/keycloak/keycloak:25.0"
+    environment:
+      KC_FEATURES: admin-fine-grained-authz
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    volumes:
+      - "./import:/opt/keycloak/data/import"
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"

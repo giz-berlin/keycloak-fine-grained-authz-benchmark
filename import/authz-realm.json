@@ -1,0 +1,168 @@
+{
+  "realm": "authz",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "demo",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "demo_secret",
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled" : true
+    },
+    {
+      "clientId" : "realm-management",
+      "name" : "${client_realm-management}",
+      "enabled" : true,
+      "clientAuthenticatorType" : "client-secret",
+      "bearerOnly" : true,
+      "consentRequired" : false,
+      "standardFlowEnabled" : true,
+      "implicitFlowEnabled" : false,
+      "directAccessGrantsEnabled" : false,
+      "serviceAccountsEnabled" : false,
+      "authorizationServicesEnabled" : true,
+      "publicClient" : false,
+      "authorizationSettings" : {
+        "allowRemoteResourceManagement" : false,
+        "policyEnforcementMode" : "ENFORCING",
+        "resources" : [ {
+          "name" : "Users",
+          "scopes" : [
+            { "name" : "manage" },
+            { "name" : "view"},
+            { "name" : "map-roles" },
+            { "name" : "impersonate" },
+            { "name" : "user-impersonated" },
+            { "name" : "manage-group-membership" }
+          ]
+        } ],
+        "policies" : [ {
+          "name" : "admin group",
+          "description" : "",
+          "type" : "group",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "groups" : "[{\"path\":\"/TestGroup/SubGroup\",\"extendChildren\":false}]",
+            "groupsClaim" : ""
+          }
+        }, {
+          "name" : "manage.permission.users",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"manage\"]"
+          }
+        }, {
+          "name" : "map-roles.permission.users",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"map-roles\"]"
+          }
+        }, {
+          "name" : "manage-group-membership.permission.users",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"manage-group-membership\"]"
+          }
+        }, {
+          "name" : "admin-impersonating.permission.users",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"impersonate\"]"
+          }
+        }, {
+          "name" : "user-impersonated.permission.users",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "UNANIMOUS",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"user-impersonated\"]"
+          }
+        }, {
+          "name" : "view.permission.users",
+          "description" : "",
+          "type" : "scope",
+          "logic" : "POSITIVE",
+          "decisionStrategy" : "AFFIRMATIVE",
+          "config" : {
+            "resources" : "[\"Users\"]",
+            "scopes" : "[\"view\"]",
+            "applyPolicies" : "[\"admin group\"]"
+          }
+        } ],
+        "scopes" : [
+          { "name" : "manage" },
+          { "name" : "view"},
+          { "name" : "map-roles" },
+          { "name" : "impersonate" },
+          { "name" : "user-impersonated" },
+          { "name" : "manage-group-membership" }
+        ],
+        "decisionStrategy" : "UNANIMOUS"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@test.keycloak.org",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "Admin",
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin"
+        }
+      ]
+    },
+    {
+      "username": "service-account-demo",
+      "enabled": true,
+      "serviceAccountClientId": "demo",
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "TestRealmRole"
+      },
+      {
+        "name": "SecondTestRealmRole"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "TestGroup",
+      "path": "/TestGroup",
+      "subGroups": [
+        {
+          "name": "SubGroup",
+          "path": "/TestGroup/SubGroup"
+        }
+      ]
+    }
+  ]
+}

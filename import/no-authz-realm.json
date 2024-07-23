@@ -1,0 +1,63 @@
+{
+  "realm": "no-authz",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "demo",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "demo_secret",
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled" : true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@test.keycloak.org",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "Admin",
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin"
+        }
+      ]
+    },
+    {
+      "username": "service-account-demo",
+      "enabled": true,
+      "serviceAccountClientId": "demo",
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "TestRealmRole"
+      },
+      {
+        "name": "SecondTestRealmRole"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "TestGroup",
+      "path": "/TestGroup",
+      "subGroups": [
+        {
+          "name": "SubGroup",
+          "path": "/TestGroup/SubGroup"
+        }
+      ]
+    }
+  ]
+}
