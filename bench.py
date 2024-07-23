@@ -1,15 +1,16 @@
 import requests
 import time
 
-USERNAME = "admin"
-PASSWORD = "admin"
+ADMIN_USER = "admin"
+VIEW_USER = "viewer"
+
 CLIENT_ID = "demo"
 CLIENT_SECRET = "demo_secret"
 
 AUTHZ_REALM = "authz"
 NO_AUTHZ_REALM = "no-authz"
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://127.0.0.1:8080"
 
 ITERATIONS = 10
 SEED_USERS = 100
@@ -18,16 +19,14 @@ def millis(duration):
     return int(round(duration * 1000))
 
 def prepare(realm):
-    print("Preparing realm")
     with requests.Session() as s:
-        auth_session_user(s, realm)
+        auth_session_user(s, realm, ADMIN_USER)
 
         r = s.get(f"{BASE_URL}/admin/realms/{realm}/users")
         r.raise_for_status()
         users = r.json()
         
         if len(users) >= SEED_USERS:
-            print("Not seeding realm")
             return
 
         for i in range(SEED_USERS):
@@ -56,12 +55,12 @@ def get_users(s, realm):
     
     return duration
 
-def auth_session_user(s, realm):
+def auth_session_user(s, realm, user):
     r = s.post(
         f"{BASE_URL}/realms/{realm}/protocol/openid-connect/token",
         data={
-            "username": USERNAME,
-            "password": PASSWORD,
+            "username": user,
+            "password": user,
             "grant_type": "password",
             "client_id": "admin-cli",
         },
@@ -83,30 +82,35 @@ def auth_session_client(s, realm):
     access_token = r.json()["access_token"]
     s.headers.update({"Authorization": f"Bearer {access_token}"})
 
-def test_user(realm):
+def test_user(realm, user):
     with requests.Session() as s:
-        auth_session_user(s, realm)
+        auth_session_user(s, realm, user)
 
-        print(f"User on realm {realm}")
+        times = []
         for i in range(ITERATIONS):
             duration = get_users(s, realm)
-            print(millis(duration))
+            times.append(millis(duration))
+        print(f"{user}:", times)
 
 def test_client(realm):
     with requests.Session() as s:
         auth_session_client(s, realm)
 
-        print(f"Service account on realm {realm}")
+        times = []
         for i in range(ITERATIONS):
             duration = get_users(s, realm)
-            print(millis(duration))
+            times.append(millis(duration))
+        print("service account:", times)
 
 def main():
     for realm in [AUTHZ_REALM, NO_AUTHZ_REALM]:
+        print(f"# Realm {realm}")
         prepare(realm)
 
-        test_user(realm)
+        for u in [VIEW_USER, ADMIN_USER]:
+            test_user(realm, u)
         test_client(realm)
+        print()
 
 if __name__ == "__main__":
     main()

@@ -30,11 +30,28 @@
       ]
     },
     {
+      "username": "viewer",
+      "email": "viewer@test.keycloak.org",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "viewer",
+      "lastName": "viewer",
+      "clientRoles": {
+        "realm-management": ["view-users"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer"
+        }
+      ]
+    },
+    {
       "username": "service-account-demo",
       "enabled": true,
       "serviceAccountClientId": "demo",
       "clientRoles": {
-        "realm-management": ["realm-admin"]
+        "realm-management": ["view-users"]
       }
     }
   ],
